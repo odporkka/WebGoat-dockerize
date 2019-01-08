@@ -1,6 +1,10 @@
-FROM ubuntu:16.04
+FROM alpine:latest
 
-RUN apt-get update && apt-get install -y default-jre
+RUN apk add --no-cache openjdk8-jre curl && \
+  curl -L https://github.com/WebGoat/WebGoat/releases/download/v8.0.0.M21/webgoat-server-8.0.0.M21.jar -o webgoat.jar && \
+  apk del curl && \
+  adduser -D webgoat && chown -R webgoat webgoat.jar
+  
 EXPOSE 8080
-COPY webgoat-server-8.0.0.M21.jar .
-CMD ["java","-jar","webgoat-server-8.0.0.M21.jar","--server.address=0.0.0.0"]
+USER webgoat
+CMD ["java","-jar","webgoat.jar","--server.address=0.0.0.0"]
